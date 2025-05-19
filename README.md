@@ -5,7 +5,7 @@
 
 ## Overview
 
-This repository contains the code required to reproduce the results from the study [Chan et al. 2024](https://doi.org/10.1101/2024.08.17.24312064).
+This repository contains the code required to reproduce the results from the study [Chan et al. 2024](https://doi.org/10.1016/j.epidem.2025.100815).
 The original [code](https://github.com/will-s-hart/UK-generation-times), developed by [Hart et al. 2022](https://doi.org/10.7554/elife.70767), was translated from MATLAB to R.
 
 For this demonstration, we are not sharing the US household data. Instead, we used the UK household data from the original study. This demonstration was conducted using 1,000 iterations for simplification. 
