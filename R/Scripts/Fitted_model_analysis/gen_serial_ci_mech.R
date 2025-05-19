@@ -7,7 +7,7 @@ suppressMessages(library(ggplot2))
 suppressMessages(library(ggdist))
 suppressMessages(library(dplyr))
 
-## input parameter #################################################################
+## input parameter #############################################################
 args <- commandArgs(trailingOnly = TRUE)       # Get command-line arguments
 if (length(args) == 0) { args <- c(1, 2) }     # Check if arguments are provided; if not, use a default value
 i <- as.numeric(args[1])                       # Convert the first argument to numeric
@@ -16,7 +16,7 @@ print(paste0("i = ", i, " (index of job)"))    # Print the index
 print(paste0("j = ", j, " (index of sample)")) # Print the index
 
 ## single sample ###############################################################
-serial_ci_mech <- function(i, j) {
+gen_serial_ci_mech <- function(i, j) {
   set.seed(2023) # fix randomness
   suppressMessages(library(ggplot2))
   suppressMessages(library(ggdist))
@@ -87,11 +87,11 @@ serial_ci_mech <- function(i, j) {
   source("../R/Parameters/scenario_name.R")
   scn <- scenario_name(i, param_seq)
   
-  # folder
-  if (j == 1) {
-    # unlink(    paste0("../R/Results-temp/", scn, "/RData_SI/"), recursive = TRUE) # Delete the folder and its contents
-    dir.create(paste0("../R/Results-temp/", scn, "/RData_SI/"), recursive = TRUE) # Create the new folder
-  }
+  # # folder
+  # if (j == 1) {
+  #   unlink(    paste0("../R/Results-temp/", scn, "/RData_gen_serial/"), recursive = TRUE) # Delete the folder and its contents
+  #   dir.create(paste0("../R/Results-temp/", scn, "/RData_gen_serial/"), recursive = TRUE) # Create the new folder
+  # }
   
   # Load assumed parameters
   load(paste0("../R/Results-temp/", scn, "/RData/assumed_parameters.RData"))
@@ -109,53 +109,81 @@ serial_ci_mech <- function(i, j) {
                             beta  = result$theta_mat[, 4],
                             rho   = params_known[4],
                             x_A   = params_known[5])
+  # One sample
+  params_i <- j
+  params_post_i <- as.numeric(params_post[params_i, ])
   
   # Define constants for the distributions
   dt      <- 0.1
   ti      <- seq(-50, 50, by = dt)
   int_max <- max(ti)
   
-  ## Serial interval #############################################################
-  # One sample
-  params_i = j
-  params_post_i <- as.numeric(params_post[params_i, ])
+  ## Generation time ###########################################################
+  # Generation time
+  source("../R/Functions/Mech/get_gen_dist_mech.R")
+  f_gen_mech <- get_gen_dist_mech(params_post_i, int_max)
   
+  print(filename <- paste0("../R/Results-temp/", scn, "/RData_gen_serial/gen_mech_", params_i, ".RData"))
+  if (!file.exists(filename)) { # Check if the file already exists
+    
+    # Numerical approximation
+    tic <- Sys.time()
+    f_gen_mech_ti <-
+      tryCatch({
+        sapply(ti, f_gen_mech)
+      }, error = function(err) {
+        warning("An error occurred: ", conditionMessage(err), "\n")
+        rep(0, length(ti))                                           # Return a vector of zeros
+      })
+    print(toc <- Sys.time() - tic)
+    
+    # mean and SD given one sample
+    gen_mean <- sum(f_gen_mech_ti * ti) * dt
+    gen_sd   <- sqrt(sum(f_gen_mech_ti * ti^2) * dt - (sum(f_gen_mech_ti * ti) * dt)^2)
+    
+    # Print mean and SD for the current sample
+    cat(sprintf("(Generation time) Sample %d: Mean = %.2f, SD = %.2f\n", params_i, gen_mean, gen_sd))
+    
+    # Save results
+    save(f_gen_mech_ti, file = filename)
+  } else {
+    # Print statement
+    cat(sprintf("File already exist\n"))
+  }
+  
+  ## Serial interval ###########################################################
   # Serial interval
   source("../R/Functions/Mech/get_serial_dist_mech.R")
   f_serial_mech <- get_serial_dist_mech(params_post_i, int_max)
   
-  # Numerical approximation
-  tic <- Sys.time()
-  f_serial_mech_ti <-
-    tryCatch({
-      sapply(ti, f_serial_mech)
-    }, error = function(err) {
-      warning("An error occurred: ", conditionMessage(err), "\n")
-      rep(0, length(ti))                                           # Return a vector of zeros
-    })
-  print(toc <- Sys.time() - tic)
-  
-  # # Numerical approximation
-  # tic <- Sys.time()
-  # cl <- parallel::makeCluster(parallel::detectCores() - 1)         # Create a cluster with the detected number of CPU cores
-  # parallel::clusterExport(cl, c(ls(), lsf.str()))                  # Export the all variables and functions to the cluster
-  # f_serial_mech_ti <- parallel::parSapply(cl, ti, f_serial_mech)   # Use parSapply to apply the function in parallel
-  # parallel::stopCluster(cl)                                        # Stop the cluster when done
-  # print(toc <- Sys.time() - tic)
-  
-  # mean and SD given one sample
-  SI_mean <- sum(f_serial_mech_ti * ti) * dt
-  SI_sd   <- sqrt(sum(f_serial_mech_ti * ti^2) * dt - (sum(f_serial_mech_ti * ti) * dt)^2)
-  
-  # Print mean and SD for the current sample
-  cat(sprintf("Sample %d: Mean = %.2f, SD = %.2f\n", params_i, SI_mean, SI_sd))
-  
-  # Save results
-  df_SI <- data.frame(params_i = params_i,
-                      SI_mean  = SI_mean,
-                      SI_sd    = SI_sd)
-  save(df_SI, file = paste0("../R/Results-temp/", scn, "/RData_SI/serial_mech_", params_i, ".RData"))
+  print(filename <- paste0("../R/Results-temp/", scn, "/RData_gen_serial/serial_mech_", params_i, ".RData"))
+  if (!file.exists(filename)) { # Check if the file already exists
+    
+    # Numerical approximation
+    tic <- Sys.time()
+    f_serial_mech_ti <-
+      tryCatch({
+        sapply(ti, f_serial_mech)
+      }, error = function(err) {
+        warning("An error occurred: ", conditionMessage(err), "\n")
+        rep(0, length(ti))                                           # Return a vector of zeros
+      })
+    print(toc <- Sys.time() - tic)
+    
+    # mean and SD given one sample
+    serial_mean <- sum(f_serial_mech_ti * ti) * dt
+    serial_sd   <- sqrt(sum(f_serial_mech_ti * ti^2) * dt - (sum(f_serial_mech_ti * ti) * dt)^2)
+    
+    # Print mean and SD for the current sample
+    cat(sprintf("(Serial interval) Sample %d: Mean = %.2f, SD = %.2f\n", params_i, serial_mean, serial_sd))
+    
+    # Save results
+    save(f_serial_mech_ti, file = filename)
+  } else {
+    # Print statement
+    cat(sprintf("File already exist\n"))
+  }
 }
 
 # run the function
-serial_ci_mech(i, j)
+gen_serial_ci_mech(i, j)
