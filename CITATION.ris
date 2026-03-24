@@ -1,0 +1,38 @@
+TY  - JOUR
+T1  - Estimating the generation time for influenza transmission using household data in the United States
+AU  - Chan, Louis Yat Hin
+AU  - Morris, Sinead E.
+AU  - Stockwell, Melissa S.
+AU  - Bowman, Natalie M.
+AU  - Asturias, Edwin
+AU  - Rao, Suchitra
+AU  - Lutrick, Karen
+AU  - Ellingson, Katherine D.
+AU  - Nguyen, Huong Q.
+AU  - Maldonado, Yvonne
+AU  - McLaren, Son H.
+AU  - Sano, Ellen
+AU  - Biddle, Jessica E.
+AU  - Smith-Jeffcoat, Sarah E.
+AU  - Biggerstaff, Matthew
+AU  - Rolfes, Melissa A.
+AU  - Talbot, H. Keipp
+AU  - Grijalva, Carlos G.
+AU  - Borchering, Rebecca K.
+AU  - Mellis, Alexandra M.
+JO  - Epidemics
+VL  - 50
+SP  - 100815
+PY  - 2025
+DA  - 2025/03/01/
+SN  - 1755-4365
+DO  - https://doi.org/10.1016/j.epidem.2025.100815
+UR  - https://www.sciencedirect.com/science/article/pii/S1755436525000039
+KW  - Generation interval
+KW  - Serial interval
+KW  - Incubation period
+KW  - Pre-symptomatic transmission
+KW  - Household transmission
+KW  - Respiratory diseases
+AB  - The generation time, representing the interval between infections in primary and secondary cases, is essential for understanding and predicting the transmission dynamics of seasonal influenza, including the real-time effective reproduction number (Rt). However, comprehensive generation time estimates for seasonal influenza, especially since the 2009 influenza pandemic, are lacking. We estimated the generation time utilizing data from a 7-site case-ascertained household study in the United States over two influenza seasons, 2021/2022 and 2022/2023. More than 200 individuals who tested positive for influenza and their household contacts were enrolled within 7 days of the first illness in the household. All participants were prospectively followed for 10 days, completing daily symptom diaries and collecting nasal swabs, which were then tested for influenza via RT-PCR. We analyzed these data by modifying a previously published Bayesian data augmentation approach that imputes infection times of cases to obtain both intrinsic (assuming no susceptible depletion) and realized (observed within household) generation times. We assessed the robustness of the generation time estimate by varying the incubation period, and generated estimates of the proportion of transmission occurring before symptomatic onset, the infectious period, and the latent period. We estimated a mean intrinsic generation time of 3.2 (95 % credible interval, CrI: 2.9–3.6) days, with a realized household generation time of 2.8 (95 % CrI: 2.7–3.0) days. The generation time exhibited limited sensitivity to incubation period variation. Estimates of the proportion of transmission that occurred before symptom onset, the infectious period, and the latent period were sensitive to variations in the incubation period. Our study contributes to the ongoing efforts to refine estimates of the generation time for influenza. Our estimates, derived from recent data following the COVID-19 pandemic, are consistent with previous pre-pandemic estimates, and will be incorporated into real-time Rt estimation efforts.
+ER  - 
